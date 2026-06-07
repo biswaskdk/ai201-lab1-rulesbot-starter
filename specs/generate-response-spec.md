@@ -42,7 +42,7 @@ Returns a fallback string (not an error) when `retrieved_chunks` is empty.
 *How will you format the retrieved chunks before passing them to the LLM? Describe the structure — not the code. Consider: will you label chunks by game? Include distance scores? Separate chunks with delimiters?*
 
 ```
-[your answer here]
+Format the retrieved chunks as a list of labeled rule excerpts. For each chunk, show the game name followed by the chunk text, and separate chunks with a delimiter like "---". Do not include distance scores.
 ```
 
 ---
@@ -52,7 +52,7 @@ Returns a fallback string (not an error) when `retrieved_chunks` is empty.
 *Write the exact system prompt instruction you will use to prevent the model from answering beyond the retrieved text. This is the most important design decision in this function.*
 
 ```
-[your answer here]
+Answer using only the rule text provided below. If the answer is not contained in the provided text, say so explicitly and do not draw on outside knowledge or general board game knowledge.
 ```
 
 ---
@@ -62,7 +62,7 @@ Returns a fallback string (not an error) when `retrieved_chunks` is empty.
 *Write the exact instruction you will use to tell the model to identify which game its answer comes from.*
 
 ```
-[your answer here]
+Always cite the game document from which the answer comes.
 ```
 
 ---
@@ -72,7 +72,7 @@ Returns a fallback string (not an error) when `retrieved_chunks` is empty.
 *What should the response say when the answer isn't found in the loaded rule books? Write the exact fallback message.*
 
 ```
-[your answer here]
+Unfortunately the question is Beyond the Game Rule's Database.
 ```
 
 ---
@@ -82,7 +82,7 @@ Returns a fallback string (not an error) when `retrieved_chunks` is empty.
 *`retrieved_chunks` may include chunks with high distance scores (weak relevance). Will you filter these out before building context, pass them all in, or handle them another way? What are the tradeoffs?*
 
 ```
-[your answer here]
+I will filter out chunks with distance above 0.7 before building context. The tradeoff is that some queries may then return no answer and trigger the fallback response.
 ```
 
 ---
@@ -92,7 +92,21 @@ Returns a fallback string (not an error) when `retrieved_chunks` is empty.
 *Describe how you will structure the messages list for the API call — what goes in the system message vs. the user message?*
 
 ```
-[your answer here]
+System message:
+Answer using only the rule text provided below. If the answer is not contained in the provided text, say so explicitly and do not draw on outside knowledge. Always cite the game document from which the answer comes.
+
+Here are the retrieved rule chunks:
+
+Game: Catan
+Chunk:
+When a 7 is rolled, no resources are produced. Every player with more than 7 resource cards must discard half.
+
+---
+Game: Monopoly
+Chunk:
+Houses and hotels may be bought only when you own all properties in a color group.
+
+Question: {user query}
 ```
 
 ---
@@ -104,14 +118,14 @@ Returns a fallback string (not an error) when `retrieved_chunks` is empty.
 **Test query and response:**
 
 ```
-Query: [your test query]
-Response: [abbreviated response]
-Correctly grounded? [yes / no]
-Cited the right game? [yes / no]
+Query: how do i win Monopoly?
+Response: According to the Monopoly rules, "The last player remaining after all others have gone bankrupt wins the game." (Source: monopoly.txt)
+Correctly grounded? [yes / no] Yes
+Cited the right game? [yes / no] Yes
 ```
 
 **One thing you changed from your original spec after seeing the actual output:**
 
 ```
-[your answer here]
+I expected the model to paraphrase or expand on the rules more, but the output was mostly the retrieved rule text with only light rephrasing and minimal additional content.
 ```
