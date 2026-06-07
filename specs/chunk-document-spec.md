@@ -116,11 +116,12 @@ handle these cases better, at the cost of more implementation complexity.
 **Actual chunk count produced across all 8 rule books:**
 
 ```
-[your answer here]
+149 chunk count were produced across all 8 rule books.
 ```
 
 **One thing that surprised you or didn't match your expectations:**
 
 ```
-[your answer here]
+I was surprised by the simplicity of the chunk splitting approach. Character-based splitting was
+pretty simply and straight forward. I was expecting the strategy to be more creative.
 ```
