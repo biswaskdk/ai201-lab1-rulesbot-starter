@@ -1,4 +1,5 @@
 import os
+import re
 from config import DOCS_PATH
 
 
@@ -45,6 +46,17 @@ def chunk_document(text, game_name):
     chunk_size = 300
     overlap = 50
     min_length = 50
+
+    # Normalize whitespace before chunking so the character budget is spent on
+    # real content, not blank lines or runs of spaces from the source docs.
+    #   - collapse runs of spaces/tabs within a line into a single space
+    #   - trim trailing whitespace at the end of each line
+    #   - collapse 2+ consecutive blank lines into a single blank line
+    #     (paragraph/section breaks are preserved as one "\n\n")
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r" *\n", "\n", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    text = text.strip()
 
     chunks = []
     prefix = game_name.lower().replace(" ", "_")
